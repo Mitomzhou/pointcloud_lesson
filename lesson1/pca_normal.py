@@ -44,11 +44,11 @@ def main():
     o3d.visualization.draw_geometries([point_cloud_o3d]) # 显示原始点云
 
     # # 从点云中获取点，只对点进行处理
-    # points = point_cloud_pynt.points
-    # print('total points number is:', points.shape[0])
-    #
-    # # 用PCA分析点云主方向
-    # w, v = PCA(points)
+    points = point_cloud_pynt.points
+    print('total points number is:', points.shape[0])
+
+    # 用PCA分析点云主方向
+    w, v = PCA(points)
     # point_cloud_vector = v[:, 2] #点云主方向对应的向量
     # print('the main orientation of this pointcloud is: ', point_cloud_vector)
     # # TODO: 此处只显示了点云，还没有显示PCA
