@@ -125,7 +125,7 @@ def main():
     # 加载原始点云
     point_cloud_pynt = PyntCloud.from_file("../data/airplane_0001.ply")
     point_cloud_o3d = point_cloud_pynt.to_instance("open3d", mesh=False)
-    # o3d.visualization.draw_geometries([point_cloud_o3d]) # 显示原始点云
+    o3d.visualization.draw_geometries([point_cloud_o3d]) # 显示原始点云
 
     # # 从点云中获取点，只对点进行处理
     points = point_cloud_pynt.points
@@ -143,7 +143,7 @@ def main():
     # get PCA geometry:
     pca_o3d = get_pca_o3d(w, v, points)
 
-    # o3d.visualization.draw_geometries([point_cloud_o3d, pca_o3d], width=800, height=600)
+    o3d.visualization.draw_geometries([point_cloud_o3d, pca_o3d], width=800, height=600)
 
     # 循环计算每个点的法向量
     normals = get_surface_normals(point_cloud_o3d, points)

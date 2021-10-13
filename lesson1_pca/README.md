@@ -1,5 +1,7 @@
 ## 算法流程与结果
 
+#### 原始点云
+![original_pc](https://github.com/Mitomzhou/pointcloud_lesson/blob/master/imgs/lesson1/original_pc.png)
 #### PCA计算点云主方向
 ![pca_main_direction_procedure](https://github.com/Mitomzhou/pointcloud_lesson/blob/master/imgs/lesson1/pca_main_direction_procedure.png)
 #### 点法向量计算
