@@ -13,7 +13,7 @@ from result_set import KNNResultSet, RadiusNNResultSet
 
 def read_velodyne_bin(path):
     '''
-    :param path:
+    :param path: 路径文件夹(xxx.bin)
     :return: homography matrix of the point cloud, N*3
     '''
     pc_list = []
@@ -31,7 +31,7 @@ def main():
     k = 8
     radius = 1
 
-    root_dir = '/Users/renqian/cloud_lesson/kitti' # 数据集路径
+    root_dir = '/home/mitom/3DPointCloud/data/velodyne' # 数据集路径
     cat = os.listdir(root_dir)
     iteration_num = len(cat)
 

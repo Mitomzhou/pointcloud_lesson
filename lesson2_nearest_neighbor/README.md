@@ -1,6 +1,6 @@
-## Kd-tree & Octree
+## KD-tree & Octree
 
-#### Kd-tree
+#### KD-tree
 
 #### Octree
 
