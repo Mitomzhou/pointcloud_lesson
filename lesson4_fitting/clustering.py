@@ -11,15 +11,12 @@ from itertools import cycle, islice
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-# 功能：从kitti的.bin格式点云文件中读取点云
-# 输入：
-#     path: 文件路径
-# 输出：
-#     点云数组
+
 def read_velodyne_bin(path):
     '''
-    :param path:
-    :return: homography matrix of the point cloud, N*3
+    从kitti的.bin格式点云文件中读取点云
+    :param path: 文件路径
+    :return: 点云数组, N*3
     '''
     pc_list = []
     with open(path, 'rb') as f:
@@ -29,21 +26,18 @@ def read_velodyne_bin(path):
             pc_list.append([point[0], point[1], point[2]])
     return np.asarray(pc_list, dtype=np.float32)
 
-# 功能：从点云文件中滤除地面点
-# 输入：
-#     data: 一帧完整点云
-# 输出：
-#     segmengted_cloud: 删除地面点之后的点云
+
 def ground_segmentation(data):
-    # 作业1
-    # 屏蔽开始
-
-
-    # 屏蔽结束
-
+    """
+    从点云文件中滤除地面点
+    :param data: 一帧完整点云
+    :return: segmengted_cloud: 删除地面点之后的点云
+    """
+    segmengted_cloud = []
     print('origin data points num:', data.shape[0])
     print('segmented data points num:', segmengted_cloud.shape[0])
     return segmengted_cloud
+
 
 # 功能：从点云中提取聚类
 # 输入：
@@ -51,13 +45,9 @@ def ground_segmentation(data):
 # 输出：
 #     clusters_index： 一维数组，存储的是点云中每个点所属的聚类编号（参考上一章内容容易理解）
 def clustering(data):
-    # 作业2
-    # 屏蔽开始
+    pass
+    # return clusters_index
 
-
-    # 屏蔽结束
-
-    return clusters_index
 
 # 功能：显示聚类点云，每个聚类一种颜色
 # 输入：
@@ -90,4 +80,6 @@ def main():
         plot_clusters(segmented_points, cluster_index)
 
 if __name__ == '__main__':
-    main()
+    # main()
+    a = read_velodyne_bin("../data/000004.bin")
+    print(a[:30])

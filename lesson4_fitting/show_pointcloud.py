@@ -13,7 +13,7 @@ def read_bin_velodyne(path):
     return np.asarray(pc_list,dtype=np.float32)
 
 def main():
-    bin_path='../data/000004.bin'
+    bin_path='../data/000038.bin'
     pcd=open3d.open3d.geometry.PointCloud()
     example=read_bin_velodyne(bin_path)
     # From numpy to Open3D

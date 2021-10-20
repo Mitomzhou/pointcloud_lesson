@@ -60,8 +60,8 @@ def write_ply_points_only_from_off(ply_data_dir, off_data_dir):
     for i in range(len(cat)):
         if not os.path.exists(os.path.join(ply_data_dir,cat[i],'train')):
             os.makedirs(os.path.join(ply_data_dir,cat[i],'train'))
-        if not os.path.exists(os.path.join(ply_data_dir,cat[i],'test')):
-            os.makedirs(os.path.join(ply_data_dir,cat[i],'test'))
+        if not os.path.exists(os.path.join(ply_data_dir,cat[i],'test.py')):
+            os.makedirs(os.path.join(ply_data_dir,cat[i],'test.py'))
     for i in range(len(cat)):
         print('writing ', i+1, '/', len(cat), ':', cat[i])
         filenames = os.listdir(os.path.join(off_data_dir, cat[i],'train'))
@@ -70,10 +70,10 @@ def write_ply_points_only_from_off(ply_data_dir, off_data_dir):
             out = os.path.join(ply_data_dir, cat[i], 'train', x)
             points, faces = read_off(filename)
             export_ply(points,out)
-        filenames = os.listdir(os.path.join(off_data_dir, cat[i],'test'))
+        filenames = os.listdir(os.path.join(off_data_dir, cat[i],'test.py'))
         for j,x in enumerate(filenames):
-            filename = os.path.join(off_data_dir, cat[i], 'test', x)
-            out = os.path.join(ply_data_dir, cat[i], 'test', x)
+            filename = os.path.join(off_data_dir, cat[i], 'test.py', x)
+            out = os.path.join(ply_data_dir, cat[i], 'test.py', x)
             points, faces = read_off(filename)
             export_ply(points,out)
 
@@ -113,8 +113,8 @@ def write_ply_points_faces_from_off(ply_data_dir, off_data_dir):
     for i in range(len(cat)):
         if not os.path.exists(os.path.join(ply_data_dir,cat[i],'train')):
             os.makedirs(os.path.join(ply_data_dir,cat[i],'train'))
-        if not os.path.exists(os.path.join(ply_data_dir,cat[i],'test')):
-            os.makedirs(os.path.join(ply_data_dir,cat[i],'test'))
+        if not os.path.exists(os.path.join(ply_data_dir,cat[i],'test.py')):
+            os.makedirs(os.path.join(ply_data_dir,cat[i],'test.py'))
     for i in range(len(cat)):
         print('writing ', i+1, '/', len(cat), ':', cat[i])
         filenames = os.listdir(os.path.join(off_data_dir, cat[i],'train'))
@@ -123,10 +123,10 @@ def write_ply_points_faces_from_off(ply_data_dir, off_data_dir):
             out = os.path.join(ply_data_dir, cat[i], 'train', x)
             points, faces = read_off(filename)
             export_ply_points_faces(points,faces,out)
-        filenames = os.listdir(os.path.join(off_data_dir, cat[i],'test'))
+        filenames = os.listdir(os.path.join(off_data_dir, cat[i],'test.py'))
         for j,x in enumerate(filenames):
-            filename = os.path.join(off_data_dir, cat[i], 'test', x)
-            out = os.path.join(ply_data_dir, cat[i], 'test', x)
+            filename = os.path.join(off_data_dir, cat[i], 'test.py', x)
+            out = os.path.join(ply_data_dir, cat[i], 'test.py', x)
             points, faces = read_off(filename)
             export_ply_points_faces(points,faces,out)
 
