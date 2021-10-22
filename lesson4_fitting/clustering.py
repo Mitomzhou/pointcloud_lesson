@@ -5,7 +5,6 @@
 
 import numpy as np
 import struct
-from itertools import cycle, islice
 import matplotlib.pyplot as plt
 import open3d as o3d
 
