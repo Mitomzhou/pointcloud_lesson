@@ -4,7 +4,7 @@ PointNet模型utils
 import torch
 import torch.nn as nn
 import numpy as np
-import  torch.nn.functional as F
+import torch.nn.functional as F
 from torch.autograd import Variable
 
 
@@ -150,7 +150,7 @@ def feature_transform_regularizer(trans):
 
 
 if __name__ == "__main__":
-    sim_data = Variable(torch.rand(32,3,2500))
+    sim_data = Variable(torch.rand(32,3,2500) )
     feat = PointNetEncoder()
     x, trans, trans_feat = feat(sim_data)
     print(x.size())
