@@ -7,7 +7,7 @@ from tqdm import tqdm
 from data_utils.ModelNetDataSet import ModelNetDataSet
 import numpy as np
 
-from pointnet1_cls import PointNetCls, PointNetLoss
+from pointnet1_cls import PointNetCls, PointNetClsLoss
 
 
 def main():
@@ -25,7 +25,7 @@ def main():
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=8, drop_last=True) # drop_last=True:最后一个batch数据不完整就删除
 
     classifier = PointNetCls(k=NUM_CLASS)
-    critertion = PointNetLoss()
+    critertion = PointNetClsLoss()
 
     if USE_CUDA:
         classifier = classifier.cuda()

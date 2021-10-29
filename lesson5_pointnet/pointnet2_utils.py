@@ -18,7 +18,7 @@ class SetAbstraction(nn.Module):
         :param npoint: 中心点个数,FPS取的sampling, SA1为512， SA2为128
         :param radius: 搜索球半径, 主导
         :param nsample: 局部区域最大点数目，球内最大点数
-        :param in_channel: 输入通道数
+        :param in_channel: 输入通道数(上一个SA层的out_channel + 3) = last_mlp[-1] + 3
         :param mlp: 全连接层的节点数，如3层[64,64,128]
         :param group_all: 局部group/全局group
         """
@@ -54,7 +54,6 @@ class SetAbstraction(nn.Module):
             new_xyz, new_points = sample_and_group(self.npoint, self.radius, self.nsample, xyz, points)
         # new_xyz:(B,npoint,nsample,3), new_points: (B,npoint,nsample,3+D)
         new_points = new_points.permute(0, 3, 2, 1)  # (B,3+D,nsample,npoint)
-        print(new_points.shape)
         for i, conv in enumerate(self.mlp_convs):
             bn = self.mlp_bns[i]
             new_points = F.relu(bn(conv(new_points)))
@@ -215,25 +214,19 @@ if __name__ == "__main__":
     npoint = 10
     radius = 0.2
     nsample = 5
-    in_channel = 3
+    in_channel = 7  # xyz.shape[1] + points.shape[1]
     mlp = [4,8,16]
     group_all = False
 
-    """
-            :param xyz: point的坐标信息 (B,C,N)  B=batch_num, C=3, N=点数
-            :param points: 除点坐标信息外的信息即点集特征 (B,D,N)
-            :return:
-                new_xyz: (B,C,S) C=3  S=npoint
-                new_points: (B,D',S)
-            """
     xyz = torch.rand(2,3,100)
     points = torch.rand(2, 4, 100)
     sa1 = SetAbstraction(npoint, radius, nsample, in_channel, mlp, group_all)
     new_xyz, new_points = sa1(xyz, points)
     print(new_xyz.shape)
     print(new_points.shape)
+    print(new_xyz)
+    print(new_points)
 
-# RuntimeError: Given groups=1, weight of size [4, 3, 1, 1], expected input[2, 7, 5, 10] to have 3 channels, but got 7 channels instead
 
 
 
