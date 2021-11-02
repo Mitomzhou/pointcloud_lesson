@@ -20,7 +20,14 @@ NUM_CLASS = 40
 BATCH_SIZE = 32
 LEARNING_RATE = 0.001
 DECAY_RATE = 0.0001
-EPOCH = 10
+EPOCH = 2
+
+params = {"USE_CUDA":USE_CUDA,
+          "NUM_CLASS":NUM_CLASS,
+          "BATCH_SIZE":BATCH_SIZE,
+          "LEARNING_RATE":LEARNING_RATE,
+          "DECAY_RATE":DECAY_RATE,
+          "EPOCH":EPOCH}
 
 
 def main():
@@ -48,8 +55,8 @@ def main():
     file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
-    logger.info("Parameter ...")
-    print("Parameter ...")
+    logger.info("Parameter %s" % str(params))
+    print("Parameter %s" % str(params))
 
 
     # 数据加载
@@ -59,6 +66,8 @@ def main():
     data_path = "/home/mitom/3DPointCloud/data/modelnet40_normal_resampled"
     train_dataset = ModelNetDataSet(root=data_path, split='train')
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=8, drop_last=True) # drop_last=True:最后一个batch数据不完整就删除
+    test_dataset = ModelNetDataSet(root=data_path, split='test')
+    test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=8)
 
     classifier = PointNetCls(k=NUM_CLASS)
     critertion = PointNetClsLoss()
@@ -117,7 +126,6 @@ def main():
             loss = critertion(pred, target.long(), trans_feat)
 
             # pred.shape: (B, 40)
-            print(pred.shape)
             # pred_choice: 返回分数最大的index  (B,)
             pred_choice = pred.data.max(1)[1]
 
@@ -133,49 +141,74 @@ def main():
 
         # 不计算梯度，对比精度
         with torch.no_grad():
-            pass
+            instance_acc, class_acc = test(classifier.eval(), test_dataloader, num_class=NUM_CLASS)
+
+            if instance_acc >= best_instance_acc:
+                best_instance_acc = instance_acc
+                best_epoch = epoch + 1
+
+            if class_acc >= best_class_acc:
+                best_class_acc = class_acc
+
+            logger.info('Test Instance Accuracy: %f, Class Accuracy: %f' % (instance_acc, class_acc))
+            print('Test Instance Accuracy: %f, Class Accuracy: %f' % (instance_acc, class_acc))
+            logger.info('Best Instance Accuracy: %f, Class Accuracy: %f' % (best_instance_acc, best_class_acc))
+            print('Best Instance Accuracy: %f, Class Accuracy: %f' % (best_instance_acc, best_class_acc))
+
+        if instance_acc >= best_instance_acc:
+            logger.info('Save model ...')
+            print('Save model ...')
+            savepath = str(checkpoints_dir) + '/best_model.pth'
+            logger.info('Saveing at %s' % savepath)
+            print('Saveing at %s' % savepath)
+            state = {
+                'epoch': best_epoch,
+                'instance_acc': instance_acc,
+                'class_acc': class_acc,
+                'model_state_dict': classifier.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+            }
+            torch.save(state, savepath)
+        global_epoch += 1
+    logger.info('End of training ...')
+    print('End of training ...')
 
 
 def test(model, loader, num_class=NUM_CLASS):
     """
-
+    验证模型函数
     :param model:
     :param loader:
     :param num_class:
     :return:
     """
-
     mean_correct = []
     class_acc = np.zeros((num_class, 3))  # (40, 3)
     classifier = model.eval()
 
     for idx, (points, target) in tqdm(enumerate(loader), total=len(loader)):
+        points = points[:, :, 0:3]  # 取 x y z
         if USE_CUDA:
             points, target = points.cuda(), target.cuda()
         points = points.transpose(2, 1) # (B,N,3) -> (B,3,N)
         pred, _ = classifier(points) # (B,N)
-        pred_choise = pred.data.max(1)[1]
+        pred_choice = pred.data.max(1)[1]
 
         for category in np.unique(target.cpu()):
-            pass
+            classacc = pred_choice[target == category].eq(target[target == category].long().data).cpu().sum()
+            class_acc[category, 0] += classacc.item() / float(points[target == category].size()[0])
+            class_acc[category, 1] += 1
 
+        correct = pred_choice.eq(target.long().data).cpu().sum()
+        mean_correct.append(correct.item() / float(points.size()[0]))
 
+    class_acc[:, 2] = class_acc[:, 0] / class_acc[:, 1]
+    class_acc = np.mean(class_acc[:, 2])
+    instance_acc = np.mean(mean_correct)
 
+    return instance_acc, class_acc
 
 
 if __name__ == "__main__":
-    # main()
-    # test(1,1)
-    class_acc = np.zeros((5, 3))
-    pred_choise = torch.tensor([0,1,2,3,4,0,1,1,2,3])
-    target = torch.tensor([0, 1, 2, 3, 4, 0, 1, 2, 3, 4])
-    target_u = np.unique(target.cpu())
-    print(target_u)
-    for cat in target_u:
-        classacc = pred_choise[target == cat].eq(target[target==cat].long().data).cpu().sum()
-        class_acc[cat, 0] += classacc.item() / float(target[target == cat].size()[0])
-        class_acc[cat, 1] += 1
-        print(classacc)
-    print(class_acc)
-    correct = pred_choise.eq(target.long().data).cpu().sum()
-    print(correct)
+    main()
+
